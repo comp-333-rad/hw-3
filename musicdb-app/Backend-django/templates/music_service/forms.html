@@ -1,0 +1,72 @@
+{% extends "music_service/base.html" %}
+
+{% load static %}
+
+<!--{% block css %} <link rel="stylesheet" href= "{% static 'zing_it/css/songs.css' %}"/> {% endblock %} -->
+
+{% block title %} Music DB {% endblock %}
+
+{% block heading %}
+<center>Registration</center>
+{% endblock %}
+
+{% block content%}
+<center>
+    <form method="POST">
+        {% csrf_token %}
+        <table>
+            {{registration.as_table}}
+        </table>
+
+        <input type="submit" name="register" value="register">
+   </form>
+   <br>
+   <b><span>{{registerStatus}}</span></b>
+
+    <br>
+
+<br>
+Retrieve Songs by Username
+
+    <br>
+
+<form method="GET">
+      <table>
+            {{retrieveSong.as_table}}
+        </table>
+
+    <input type="submit" name = "retrieveSongs" value="retrieveSongs">
+</form>
+    <b>
+        <ul>
+    {% for entry in songsByUsername %}
+        <li>
+            {{ entry.song  }} >> {{entry.rating}}
+        </li>
+    {% endfor %}
+    </ul>
+       <b><span>{{retrieveSongsUsernameStatus}}</span></b>
+
+    <br>
+Retrieve Songs by Artist Name
+   <br>
+
+<form method="GET">
+      <table>
+            {{retrieveArtists.as_table}}
+        </table>
+    <input type="submit" name = "retrieveArtists" value="retrieveArtists">
+</form>
+
+      <br>
+    <ul>
+    {% for entry in songsByArtist %}
+        <li>
+            Title: {{entry.song}} |  Artist: {{entry.artist}} | Year Of Release: {{entry.year_of_release}} | Duration: {{entry.duration}}
+        </li>
+    {% endfor %}
+    </ul>
+        <b><span>{{retreveSongsArtistStatus}}</span></b>
+
+</center>
+{% endblock %}

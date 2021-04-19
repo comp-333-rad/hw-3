@@ -49,12 +49,18 @@ def logMeIn(request):
     user = authenticate(
         username=request.headers[user_id_header], password=request.headers["password"])
     print("user:", user)
+    data = {}
+    status = ""
     if user is not None:
         print("user not none")
         login(request, user)
-        return redirect("http://localhost:3000")
+        data = {"loggedIn": True}
+        status = "All Good!"
+        # return redirect("http://localhost:3000")
     else:
-        return()
+        data = {"loggedIn": False}
+        status = "Failed to log in"
+    return HttpResponse(data, status)
 
 
 def createUser(request):

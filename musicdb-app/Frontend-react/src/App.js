@@ -11,6 +11,17 @@ import BarExample from './components/chart';
 
 library.add(fab, faCheckSquare, faCoffee, faTrash, faEdit, faMusic)
 
+// path('editSong/', views.editSong, name="editSong"),
+// path('songsByUser/', views.retrieveSongsByUser, name="songsByUser"),
+// path('listAllSongs/', views.retrieveAllSongs, name="listAllSongs"),
+// path('deleteSong/', views.deleteSong, name="deleteSong"),
+// path('createSong/', views.createSong, name="createSong"),
+// path('updateRating/', views.updateRating, name="updateRating"),
+// path('login/', views.loginPage, name="loginPage"),
+// path('register/', views.registerPage, name="registerPage"),
+// path('logMeIn/', views.logMeIn, name="logMeIn"),
+// path('createUser/', views.createUser, name="createUser"),
+
 const songsList = [
   { "id": 1, "name": "It's Time", "artist": "Imagine Dragons", "rating": 5, },
   { "id": 2, "name": "Jumpman", "artist": "Drake", "rating": 5 },
@@ -29,18 +40,17 @@ function App() {
   const [viewSongState, setViewSongState] = useState({})
   const toggleGraph = () => { setShowTrending(!showTrending) }
 
-  const deleteSong = (id) => {
+  const deleteSong = (songDetails) => {
     //logic to delete song from DB
     // React.useEffect( () => {
       let config = {
         headers: {
-          'username': value,
-          'song-id': id
+          'username': songDetails.username,
+          'song-id': songDetails.id
         }
       }
       
       let data = {
-        'HTTP_CONTENT_LANGUAGE': self.language
       }
       var songsList = []
   
@@ -51,7 +61,7 @@ function App() {
   
     }
     // )
-  }
+  
 
   React.useEffect( () => {
     let config = {
@@ -61,7 +71,6 @@ function App() {
     }
     
     let data = {
-      'HTTP_CONTENT_LANGUAGE': self.language
     }
     var songsList = []
 
@@ -76,16 +85,25 @@ function App() {
 
   const editSong = (songDetails) => {
 
-    setShowEdit(true)
+    
     setViewSongState(songDetails)
-
+    let config = {
+      headers: {
+        "song-id": songDetails.id,
+        "username": songDetails.username
+      }
+    }
+    
+    let data = {...songDetails}
+      
+    axios.get(URL, data, config).then(setShowEdit(true))
 
   }
 
   const onCreateSong = (songDetails) => {
     let config = {
       headers: {
-        'username': value,
+        'username': songDetails.username,
       }
     }
     
@@ -111,8 +129,22 @@ function App() {
 
           {songsList.map(song => {
             return (
-
-              <Song {...song}> </Song>
+              <ul>
+              <li key={song.name}>
+                <div className="flex flex-row justify-between">
+                  <h4> {song.name} - {song.artist} </h4>
+                  <div className="flex justify-between min-w-8">
+                    <button onClick={() => editSong(song)}>
+                      <FontAwesomeIcon className="fill-current text-gray-100 hover:text-gray-300" icon="edit" />
+                    </button>
+                    <button onClick={() => deleteSong(song.id)} className="fill-current text-red-400 hover:text-red-800">
+                      <FontAwesomeIcon icon="trash" />
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ul>
+              // <Song {...song}> </Song>
 
             )
           })}
@@ -139,27 +171,13 @@ function App() {
 
     </div>
   )
+}
 
-
-const Song = ({ name, artist, id }) => {
+const Song = ({ name, artist, id  }) => {
 
   return (
     <>
-      <ul>
-        <li key={song.name}>
-          <div className="flex flex-row justify-between">
-            <h4> {song.name} - {song.artist} </h4>
-            <div className="flex justify-between min-w-8">
-              <button onClick={() => editSong(song)}>
-                <FontAwesomeIcon className="fill-current text-gray-100 hover:text-gray-300" icon="edit" />
-              </button>
-              <button onClick={() => deleteSong(song.id)} className="fill-current text-red-400 hover:text-red-800">
-                <FontAwesomeIcon icon="trash" />
-              </button>
-            </div>
-          </div>
-        </li>
-      </ul>
+   
     </>
   )
 }

@@ -18,6 +18,7 @@ from django.urls import path, include
 from music_service import views
 urlpatterns = [
     path('', include('music_service.urls')),
-    path('admin/', admin.site.urls)
+    path('admin/', admin.site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),
 
 ]

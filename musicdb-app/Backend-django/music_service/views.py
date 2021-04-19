@@ -1,13 +1,70 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .forms import RegisterForm, RetreiveSongs, RetrieveArtists
-from .models import User, Artist, Rating, SongDetail
+from .models import Artist, Rating, SongDetail
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 import ast
 
 
 user_id_header = "username"
 
 
+def registerPage(request):
+    form = UserCreationForm()
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/login')
+    context = {'form': form}
+
+    return render(request, "music_service/register.html", context)
+
+
+def loginPage(request):
+    if request.method == "POST":
+
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        print("username is:", username)
+        print("password is:", password)
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+
+            print("hello")
+            login(request, user)
+            return redirect('http://localhost:3000')
+    context = {}
+    return render(request, 'music_service/login.html', context)
+
+
+def logMeIn(request):
+    print("username is:", request.headers[user_id_header])
+    user = authenticate(
+        username=request.headers[user_id_header], password=request.headers["password"])
+    print("user:", user)
+    if user is not None:
+        print("user not none")
+        login(request, user)
+        return redirect("http://localhost:3000")
+    else:
+        return()
+
+
+def createUser(request):
+    user = User.objects.create_user(
+        request.headers[user_id_header], request.headers["email"], request.headers["password"])
+    user.save()
+    return HttpResponse('', "User Created")
+
+
+@login_required(login_url="/login")
 def forms(request):
     registration = RegisterForm()
     retrieveSongs = RetreiveSongs()

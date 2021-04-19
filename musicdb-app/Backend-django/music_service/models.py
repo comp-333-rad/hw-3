@@ -1,7 +1,8 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
-class User(models.Model):
+class CustomUser(models.Model):
     username = models.CharField(max_length=255, unique=True)
     password = models.CharField(max_length=255)
 
@@ -22,6 +23,9 @@ class SongDetail(models.Model):
     year_of_release = models.IntegerField(default=0)
     name = models.CharField(max_length=255)
     duration = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name + " - " + self.artist.name
 
 
 class Rating(models.Model):

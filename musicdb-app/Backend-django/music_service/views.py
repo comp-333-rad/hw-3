@@ -58,12 +58,12 @@ def register(request):
 
 def retrieveSongsByUser(request):
     print("starting retrive songs by user")
-    username = request.headers[user_id_header]
-    print("username is:", username)
+    user_id = request.headers[user_id_header]
+    print("user_id is:", user_id)
     status = " "
     data = []
     try:
-        user = User.objects.filter(username=username).first()
+        user = User.objects.filter(username=user_id).first()
         data = Rating.objects.filter(user=user)
         data = list(data)
     except Exception as inst:
@@ -113,7 +113,7 @@ def editSong(request):
     except Exception as inst:
         print("error is:", inst)
         status = "ERROR OCCURRED WHEN TRYING TO FIND SONG IN EDIT SONG"
-    for field in ["name", "artist", "year_of_release"]:
+    for field in ["name", "artist", "year_of_release", "duration"]:
         print("field is:", field, "with a value of:", body[field])
         if field == "artist":
             artist = Artist.objects.filter(name=body[field]).first()
@@ -126,5 +126,72 @@ def editSong(request):
             setattr(song, field, body[field])
 
     song.save()
-    return HttpResponse('')
+    return HttpResponse('', status)
     # return (result, status)
+
+
+def deleteSong(request):
+    user_id = request.headers[user_id_header]
+    song_id = request.headers["song-id"]
+    status = "All Good!"
+    try:
+        song = SongDetail.objects.filter(id=song_id).first()
+    except Exception as inst:
+        print("error is:", inst)
+        status = "ERROR OCCURRED WHEN TRYING TO DELETE SONG"
+    song.delete()
+    return HttpResponse('', status)
+
+
+def createSong(request):
+    user_id = request.headers[user_id_header]
+    status = "All Good!"
+    body = ast.literal_eval(request.body.decode('utf-8'))
+    print("body in create song is:", body)
+    try:
+        artist = Artist.objects.filter(name=body["artist"]).first()
+        if artist == None:
+            artist = Artist.objects.create(name=body["artist"])
+        song = SongDetail.objects.create(
+            name=body["name"], artist=artist, year_of_release=body["year_of_release"], duration=body["duration"])
+        song.save()
+        rateSong(user_id, song.id, body["rating"])
+
+    except Exception as inst:
+        print("error is:", inst)
+        status = "ERROR OCCURRED WHEN TRYING TO CREATE SONG"
+    return HttpResponse('', status)
+
+
+def rateSong(user_id, song_id, rating):
+    song = SongDetail.objects.filter(id=song_id).first()
+    try:
+        user = User.objects.filter(username=user_id).first()
+        try:
+            ratingObj = Rating.objects.filter(
+                user=user, song=song).first()
+        except:
+            pass
+        if ratingObj == None:
+            ratingObj = Rating.objects.create(
+                user=user, song=song, rating=rating)
+        else:
+            ratingObj.rating = rating
+        ratingObj.save()
+    except Exception as inst:
+        print("error in rateSong is:", inst)
+        raise()
+
+
+def updateRating(request):
+    status = "All Good!"
+    try:
+        user_id = request.headers[user_id_header]
+        body = ast.literal_eval(request.body.decode('utf-8'))
+        rating = body["rating"]
+        song_id = request.headers["song-id"]
+        rateSong(user_id, song_id, rating)
+    except:
+        print("error is:", inst)
+        status = "ERROR OCCURRED WHEN TRYING TO UPDATE RATING"
+    return HttpResponse('', status)

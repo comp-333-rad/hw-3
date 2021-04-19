@@ -23,6 +23,9 @@ class SongDetail(models.Model):
     name = models.CharField(max_length=255)
     duration = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.name + " - " + self.artist.name
+
 
 class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -4,6 +4,28 @@ import "./App.css";
 import axios from "axios";
 
 function Login(props) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  function logMeIn() {
+    console.log("got into logmein javascript");
+
+    const options = {
+      headers: {
+        username: username,
+        password: password,
+      },
+    };
+    console.log("above axios request");
+    axios
+      .get("/logMeIn", options)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+  }
   return (
     <form>
       <input
@@ -11,21 +33,17 @@ function Login(props) {
         name="username"
         placeholder="username"
         id="username"
+        onInput={(e) => setUsername(e.target.value)}
       ></input>
-      <input type="text" name="password" placeholder="password"></input>
-      <input type="submit" onclick="logMeIn()"></input>
+      <input
+        type="text"
+        name="password"
+        placeholder="password"
+        onInput={(e) => setPassword(e.target.value)}
+      ></input>
+      <input type="submit" onClick={logMeIn}></input>
     </form>
   );
-}
-
-function logMeIn() {
-  const options = {
-    headers: {
-      username: document.getElementById("username").value(),
-      password: document.getElementById("password").value(),
-    },
-  };
-  axios.post("/logMeIn", options);
 }
 
 export default Login;

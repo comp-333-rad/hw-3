@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.core import serializers
 import ast
 
 
@@ -126,6 +127,8 @@ def retrieveAllSongs(request):
     try:
         data = SongDetail.objects.all()
         data = list(data)
+        data = serializers.serialize(
+            'json', data, use_natural_foreign_keys=True)
     except Exception as inst:
         print("error is:", inst)
         status = "Error when listing all songs"
@@ -255,6 +258,8 @@ def rateSong(user_id, song_id, rating):
         else:
             ratingObj.rating = rating
         ratingObj.save()
+        updateAvgRating(song)
+
     except Exception as inst:
         print("error in rateSong is:", inst)
         raise()
@@ -268,7 +273,20 @@ def updateRating(request):
         rating = body["rating"]
         song_id = request.headers["song-id"]
         rateSong(user_id, song_id, rating)
-    except:
+    except Exception as inst:
         print("error is:", inst)
         status = "ERROR OCCURRED WHEN TRYING TO UPDATE RATING"
     return HttpResponse('', status)
+
+
+def updateAvgRating(song):
+    try:
+        ratings = Rating.objects.filter(
+            song=song).all().values_list('rating', flat=True)
+        ratings = list(ratings)
+        avg_rating = sum(ratings) / len(ratings)
+        song.average_rating = avg_rating
+        song.save()
+    except Exception as inst:
+        print("error is:", inst)
+        status = "ERROR OCCURRED WHEN TRYING TO UPDATE AVERAGE RATING"

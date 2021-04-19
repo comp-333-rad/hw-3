@@ -17,6 +17,17 @@ import BarExample from "./components/chart";
 
 library.add(fab, faCheckSquare, faCoffee, faTrash, faEdit, faMusic);
 
+// path('editSong/', views.editSong, name="editSong"),
+// path('songsByUser/', views.retrieveSongsByUser, name="songsByUser"),
+// path('listAllSongs/', views.retrieveAllSongs, name="listAllSongs"),
+// path('deleteSong/', views.deleteSong, name="deleteSong"),
+// path('createSong/', views.createSong, name="createSong"),
+// path('updateRating/', views.updateRating, name="updateRating"),
+// path('login/', views.loginPage, name="loginPage"),
+// path('register/', views.registerPage, name="registerPage"),
+// path('logMeIn/', views.logMeIn, name="logMeIn"),
+// path('createUser/', views.createUser, name="createUser"),
+
 const songsList = [
   { id: 1, name: "It's Time", artist: "Imagine Dragons", rating: 5 },
   { id: 2, name: "Jumpman", artist: "Drake", rating: 5 },
@@ -35,19 +46,17 @@ function App() {
     setShowTrending(!showTrending);
   };
 
-  const deleteSong = (id) => {
+  const deleteSong = (songDetails) => {
     //logic to delete song from DB
     // React.useEffect( () => {
     let config = {
       headers: {
-        username: value,
-        "song-id": id,
+        username: songDetails.username,
+        "song-id": songDetails.id,
       },
     };
 
-    let data = {
-      HTTP_CONTENT_LANGUAGE: self.language,
-    };
+    let data = {};
     var songsList = [];
 
     axios.get(URL, data, config).then((data) => (songsList = data));
@@ -55,121 +64,127 @@ function App() {
     console.log(data);
   };
   // )
+
+  React.useEffect(() => {
+    let config = {
+      headers: {
+        username: "rsiddiqui",
+      },
+    };
+
+    let data = {};
+    var songsList = [];
+
+    axios.get(URL, data, config).then((data) => (songsList = data));
+
+    console.log(data);
+  });
+
+  const editSong = (songDetails) => {
+    setViewSongState(songDetails);
+    let config = {
+      headers: {
+        "song-id": songDetails.id,
+        username: songDetails.username,
+      },
+    };
+
+    let data = { ...songDetails };
+
+    axios.get(URL, data, config).then(setShowEdit(true));
+  };
+
+  const onCreateSong = (songDetails) => {
+    let config = {
+      headers: {
+        username: songDetails.username,
+      },
+    };
+
+    let data = { ...songDetails };
+
+    var songsList = [];
+
+    axios.post(URL, data, config).then(setNewSong(false));
+  };
+
+  const toggleEditSong = () => setShowEdit(false);
+
+  const toggleViewSong = () => setViewSong(false);
+
+  return (
+    <div className="flex flex-col text-white">
+      <h1 className="text-3xl my-7 text-center">
+        {" "}
+        <FontAwesomeIcon icon="music" /> Song Rater{" "}
+      </h1>
+      <div className="flex flex-row justify-center">
+        <div className="m-5 p-5 rounded border-white border-2 w-3/4 max-w-xl">
+          {songsList.map((song) => {
+            return (
+              <ul>
+                <li key={song.name}>
+                  <div className="flex flex-row justify-between">
+                    <h4>
+                      {" "}
+                      {song.name} - {song.artist}{" "}
+                    </h4>
+                    <div className="flex justify-between min-w-8">
+                      <button onClick={() => editSong(song)}>
+                        <FontAwesomeIcon
+                          className="fill-current text-gray-100 hover:text-gray-300"
+                          icon="edit"
+                        />
+                      </button>
+                      <button
+                        onClick={() => deleteSong(song.id)}
+                        className="fill-current text-red-400 hover:text-red-800"
+                      >
+                        <FontAwesomeIcon icon="trash" />
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+              // <Song {...song}> </Song>
+            );
+          })}
+          <button
+            onClick={() => setNewSong(true)}
+            className="w-36 text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-4"
+          >
+            New Song
+          </button>
+          <button
+            onClick={toggleGraph}
+            className="text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-4"
+          >
+            {showTrending ? "Hide Trending Songs" : "What Songs Are Trending?"}
+          </button>
+
+          {showTrending && <BarExample />}
+        </div>
+
+        {showEdit && (
+          <EditSong {...viewSongState} toggle={toggleEditSong}>
+            {" "}
+          </EditSong>
+        )}
+
+        {viewSong && (
+          <ViewSong {...viewSongState} toggle={toggleViewSong}>
+            {" "}
+          </ViewSong>
+        )}
+
+        {newSong && <NewSong onCreateSong={onCreateSong}> </NewSong>}
+      </div>
+    </div>
+  );
 }
 
-React.useEffect(() => {
-  let config = {
-    headers: {
-      username: "rsiddiqui",
-    },
-  };
-
-  let data = {
-    HTTP_CONTENT_LANGUAGE: self.language,
-  };
-  var songsList = [];
-
-  axios.get(URL, data, config).then((data) => (songsList = data));
-
-  console.log(data);
-});
-
-const editSong = (songDetails) => {
-  setShowEdit(true);
-  setViewSongState(songDetails);
-};
-
-const onCreateSong = (songDetails) => {
-  let config = {
-    headers: {
-      username: value,
-    },
-  };
-
-  let data = { ...songDetails };
-
-  var songsList = [];
-
-  axios.post(URL, data, config).then(setNewSong(false));
-};
-
-const toggleEditSong = () => setShowEdit(false);
-
-const toggleViewSong = () => setViewSong(false);
-
-return (
-  <div className="flex flex-col text-white">
-    <h1 className="text-3xl my-7 text-center">
-      {" "}
-      <FontAwesomeIcon icon="music" /> Song Rater{" "}
-    </h1>
-    <div className="flex flex-row justify-center">
-      <div className="m-5 p-5 rounded border-white border-2 w-3/4 max-w-xl">
-        {songsList.map((song) => {
-          return <Song {...song}> </Song>;
-        })}
-        <button
-          onClick={() => setNewSong(true)}
-          className="w-36 text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-4"
-        >
-          New Song
-        </button>
-        <button
-          onClick={toggleGraph}
-          className="text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-4"
-        >
-          {showTrending ? "Hide Trending Songs" : "What Songs Are Trending?"}
-        </button>
-
-        {showTrending && <BarExample />}
-      </div>
-
-      {showEdit && (
-        <EditSong {...viewSongState} toggle={toggleEditSong}>
-          {" "}
-        </EditSong>
-      )}
-
-      {viewSong && (
-        <ViewSong {...viewSongState} toggle={toggleViewSong}>
-          {" "}
-        </ViewSong>
-      )}
-
-      {newSong && <NewSong onCreateSong={onCreateSong}> </NewSong>}
-    </div>
-  </div>
-);
-
 const Song = ({ name, artist, id }) => {
-  return (
-    <>
-      <ul>
-        <li key={song.name}>
-          <div className="flex flex-row justify-between">
-            <h4>
-              {" "}
-              {song.name} - {song.artist}{" "}
-            </h4>
-            <div className="flex justify-between min-w-8">
-              <button onClick={() => editSong(song)}>
-                <FontAwesomeIcon
-                  className="fill-current text-gray-100 hover:text-gray-300"
-                  icon="edit"
-                />
-              </button>
-              <button
-                onClick={() => deleteSong(song.id)}
-                className="fill-current text-red-400 hover:text-red-800"
-              >
-                <FontAwesomeIcon icon="trash" />
-              </button>
-            </div>
-          </div>
-        </li>
-      </ul>
-    </>
-  );
+  return <></>;
 };
 
 const NewSong = ({ onCreateSong }) => {

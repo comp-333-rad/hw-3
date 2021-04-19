@@ -27,13 +27,51 @@ function App() {
   const [newSong, setNewSong] = useState(false)
 
   const [viewSongState, setViewSongState] = useState({})
-
   const toggleGraph = () => { setShowTrending(!showTrending) }
 
   const deleteSong = (id) => {
     //logic to delete song from DB
+    // React.useEffect( () => {
+      let config = {
+        headers: {
+          'username': value,
+          'song-id': id
+        }
+      }
+      
+      let data = {
+        'HTTP_CONTENT_LANGUAGE': self.language
+      }
+      var songsList = []
+  
+      axios.get(URL, data, config).then( data => songsList = data)
+      
+      console.log(data)
+  
+  
+    }
+    // )
   }
 
+  React.useEffect( () => {
+    let config = {
+      headers: {
+        'username': 'rsiddiqui',
+      }
+    }
+    
+    let data = {
+      'HTTP_CONTENT_LANGUAGE': self.language
+    }
+    var songsList = []
+
+    axios.get(URL, data, config).then( data => songsList = data)
+    
+    console.log(data)
+
+
+  }
+  )
 
 
   const editSong = (songDetails) => {
@@ -44,22 +82,29 @@ function App() {
 
   }
 
-  const onCreateSong = () => {
-    setNewSong(false)
+  const onCreateSong = (songDetails) => {
+    let config = {
+      headers: {
+        'username': value,
+      }
+    }
+    
+    let data = {...songDetails}
+      
+    
+    var songsList = []
 
-    // logic to create new songs
-
+    axios.post(URL, data, config).then(setNewSong(false))
+    
+   
   }
+
   const toggleEditSong = () => setShowEdit(false)
 
   const toggleViewSong = () => setViewSong(false)
 
   return (
-
     <div className="flex flex-col text-white">
-      <div className="m-4">
-
-      </div>
       <h1 className="text-3xl my-7 text-center"> <FontAwesomeIcon icon="music" /> Song Rater </h1>
       <div className="flex flex-row justify-center">
         <div className="m-5 p-5 rounded border-white border-2 w-3/4 max-w-xl" >
@@ -94,7 +139,7 @@ function App() {
 
     </div>
   )
-}
+
 
 const Song = ({ name, artist, id }) => {
 
@@ -120,16 +165,28 @@ const Song = ({ name, artist, id }) => {
 }
 
 const NewSong = ({ onCreateSong }) => {
+  const [songDetails, setSongDetails] = useState({'name': '', 'artist': '', 'rating': 0, 'year_of_release': 0, 'duration': 0 })
+
 
   return (
     <>
       <div className="m-5 p-5 rounded border-white border-2">
         <p className="my-2 text-white text-sm"> Title</p>
-        <input className="text-black min-w-xl" type="text" />
+        <input type = "text" onChange = {(event) => setSongDetails({name: event.target.value})} className="text-black min-w-xl" />
         <p className="my-2 text-white text-sm"> Artist</p>
-        <input className="text-black min-w-xl" type="text" />
+        <input type = "text" onChange = {(event) => setSongDetails({artist: event.target.value})} className="text-black min-w-xl" />
         <br />
-        <button className="my-2 bg-blue-500 hover:bg-blue-700 w-36 rounded" onClick={onCreateSong}> Create Song </button>
+        <p className="my-2 text-white text-sm"> Rating </p>
+        <input type = "number" onChange = {(event) => setSongDetails({rating: event.target.value})} className="text-black min-w-xl"  />
+        <br />
+
+          <p className="my-2 text-white text-sm"> Duration </p>
+        <input type = "number" onChange = {(event) => setSongDetails({duration: event.target.value})} className="text-black min-w-xl"  />
+        <br />
+        <p className="my-2 text-white text-sm"> Year Of Release </p>
+        <input type = "number" onChange = {(event) => setSongDetails({year_of_release: event.target.value})} className="text-black min-w-xl"  />
+        <br />
+        <button className="my-2 bg-blue-500 hover:bg-blue-700 w-36 rounded" onClick={onCreateSong(songDetails)}> Create Song </button>
 
       </div>
     </>

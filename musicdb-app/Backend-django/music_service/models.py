@@ -25,7 +25,7 @@ class SongDetail(models.Model):
 
 
 class Rating(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     song = models.ForeignKey(SongDetail, on_delete=models.CASCADE)
     # username = models.PrimaryKey(User.username + song, on_delete=models.CASCADE)
     rating = models.IntegerField()

@@ -56,20 +56,21 @@ def register(request):
     return status
 
 
-def retrieveSongsByUsername(request):
+def retrieveSongsByUser(request):
+    print("starting retrive songs by user")
     username = request.headers[user_id_header]
     print("username is:", username)
     status = " "
     data = []
     try:
         user = User.objects.filter(username=username).first()
-        data = Rating.objects.filter(username=user)
+        data = Rating.objects.filter(user=user)
         data = list(data)
     except Exception as inst:
         print("error is:", inst)
         status = "Username does not exist inside the database"
     print("data is:", data)
-    return (data, status)
+    return HttpResponse(data, status)
 
 
 def retrieveSongsByArtist(request):

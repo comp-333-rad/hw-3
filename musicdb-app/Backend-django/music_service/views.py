@@ -146,6 +146,8 @@ def retrieveSongsByUser(request):
         user = User.objects.filter(username=user_id).first()
         data = Rating.objects.filter(user=user)
         data = list(data)
+        data = serializers.serialize(
+            'json', data, use_natural_foreign_keys=True)
     except Exception as inst:
         print("error is:", inst)
         status = "Username does not exist inside the database"

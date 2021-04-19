@@ -113,6 +113,20 @@ def register(request):
     return status
 
 
+def retrieveAllSongs(request):
+    print("starting retrieve all songs")
+    status = "All Good!"
+    data = []
+    try:
+        data = SongDetail.objects.all()
+        data = list(data)
+    except Exception as inst:
+        print("error is:", inst)
+        status = "Error when listing all songs"
+    print("data is:", data)
+    return HttpResponse(data, status)
+
+
 def retrieveSongsByUser(request):
     print("starting retrive songs by user")
     user_id = request.headers[user_id_header]

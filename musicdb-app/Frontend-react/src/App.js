@@ -35,12 +35,6 @@ const exampleList = [
   { "id": 4, "name": "Wavy", "artist": "Sal Houdini", "rating": 4.3 }]
 
 var songsList = []
-const songsList = [
-  { id: 1, name: "It's Time", artist: "Imagine Dragons", rating: 5 },
-  { id: 2, name: "Jumpman", artist: "Drake", rating: 5 },
-  { id: 3, name: "What's Next", artist: "Drake", rating: 4.5 },
-  { id: 4, name: "Wavy", artist: "Sal Houdini", rating: 4.3 },
-];
 
 const URL = "http://localhost:8000"
 function App() {
@@ -81,8 +75,6 @@ function App() {
   }
   )
 
-    let data = {};
-    var songsList = [];
 
   const editSong = (songDetails) => {
     setViewSongState(songDetails)
@@ -93,9 +85,8 @@ function App() {
       }
     }
     
-    let data = {...songDetails}
-      
-    axios.get(URL+'/editSong', data, config).then(setShowEdit(true))
+    
+    axios.get(URL+'/editSong', {...songDetails}, config).then(setShowEdit(true))
 
     let data = { ...songDetails };
 

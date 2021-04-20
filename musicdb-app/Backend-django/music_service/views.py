@@ -66,6 +66,20 @@ def logMeIn(request):
     return HttpResponse(data, status)
 
 
+def checkLogin(request):
+    data = json.dumps(request.user.is_authenticated)
+    print("is logged in via django:", data)
+    return HttpResponse(data)
+
+
+def logMeOut(request):
+    print(":got into logmeout")
+    logout(request)
+    print("logging out")
+    status = "logged out successfully"
+    return HttpResponse("", status)
+
+
 def createUser(request):
     status = True
     print("request headers for createUser:", request.headers)

@@ -76,6 +76,8 @@ def getUsername(request):
     data = ""
     if request.user.is_authenticated:
         data = request.user.username
+    else:
+        data = "NOT LOGGED IN"
     return HttpResponse(json.dumps(data))
 
 

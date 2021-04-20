@@ -12,6 +12,13 @@ function Login(props) {
   const [loginOrReg, setLoginOrReg] = useState("login");
   const [isLoggedIn, setLoginStatus] = useState(false);
 
+  axios.get("/checkLogin").then((response) => {
+    if (response["data"] == true) {
+      props.setLoggedIn(true);
+      console.log("LOGGED IN");
+    }
+    console.log(response);
+  });
   // function EntranceForm(props) {
   //   console.log("rerendering entrance form");
   //   if (loginOrReg == "login") {
@@ -87,7 +94,7 @@ function Login(props) {
     console.log("above axios request");
     axios.get("/logMeIn", options).then((response) => {
       if (response["data"]["loggedIn"] == true) {
-        props.setLoginStatus(true);
+        props.setLoggedIn(true);
         console.log("LOGGED IN");
       } else {
         setErrorStatus(true);

@@ -4,7 +4,7 @@ import axios from "axios";
 function ErrorMessage(props) {
   if (props.errorStatus) {
     return (
-      <h2>
+      <h2 className="text-white">
         There was an error while filling out the form, please check your
         credentials and try again
       </h2>

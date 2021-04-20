@@ -2,6 +2,11 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class ArtistManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
+
 class CustomUser(models.Model):
     username = models.CharField(max_length=255, unique=True)
     password = models.CharField(max_length=255)
@@ -13,8 +18,16 @@ class CustomUser(models.Model):
 class Artist(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
+    objects = ArtistManager()
+
+    class Meta:
+        unique_together = [['name']]
+
     def __str__(self):
         return self.name
+
+    def natural_key(self):
+        return (self.name)
 
 
 class SongDetail(models.Model):
@@ -23,6 +36,8 @@ class SongDetail(models.Model):
     year_of_release = models.IntegerField(default=0)
     name = models.CharField(max_length=255)
     duration = models.IntegerField(default=0)
+    average_rating = models.DecimalField(
+        max_digits=9, decimal_places=2, default=0)
 
     def __str__(self):
         return self.name + " - " + self.artist.name

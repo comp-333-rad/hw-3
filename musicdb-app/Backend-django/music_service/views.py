@@ -72,6 +72,13 @@ def checkLogin(request):
     return HttpResponse(data)
 
 
+def getUsername(request):
+    data = ""
+    if request.user.is_authenticated:
+        data = request.user.username
+    return HttpResponse(json.dumps(data))
+
+
 def logMeOut(request):
     print(":got into logmeout")
     logout(request)

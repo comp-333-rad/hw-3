@@ -6,7 +6,7 @@ import Login from "../Login";
 function Home(props) {
   const [isLoggedIn, setLoggedIn] = useState(false);
   if (isLoggedIn) {
-    return <App />;
+    return <App  />;
   } else if (!isLoggedIn) {
     return <Login setLoggedIn={setLoggedIn} />;
   }

@@ -34,30 +34,22 @@ const exampleList = [
   { "id": 3, "name": "What's Next", "artist": "Drake", "rating": 4.5 },
   { "id": 4, "name": "Wavy", "artist": "Sal Houdini", "rating": 4.3 }]
 
-var songsList = []
+var songsList = exampleList
 
 const URL = "http://localhost:8000"
-function App() {
+function App({username}) {
   const [showTrending, setShowTrending] = useState(false);
   const [viewSong, setViewSong] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [newSong, setNewSong] = useState(false);
+  const [songs, setSongs] = useState([]);
 
   const [viewSongState, setViewSongState] = useState({});
   const toggleGraph = () => {
     setShowTrending(!showTrending);
   };
 
-  const getAllSongs = () => {
-    axios.get(URL+'/listAllSongs').then( function (response) {
-      console.log(response)
-      console.log("asdlkfjalsdkj")
-      songsList = response.json
-      console.log(songsList)
-    }).catch((data) => {
-      songsList = exampleList
-    })
-  }
+ 
 
   const deleteSong = (songDetails) => {
     //logic to delete song from DB
@@ -67,13 +59,24 @@ function App() {
           'song-id': songDetails.id
         }
       }
-      axios.get(URL+'/deleteSong',config)
+      // axios.get(URL+'/deleteSong',config)
     }
   
   React.useEffect( () => {
-    getAllSongs()
-  }
-  )
+    
+      axios.get(URL+'/listAllSongs').then( function (response) {
+        let songsList = []
+        console.log(response.data)
+        response.data.map((song) => songsList = [...songsList, song.fields])
+        setSongs(songsList)
+        console.log(songsList)
+        console.log(songs, "songs")
+      }).catch((err) => {
+        console.log("error", err)
+        songsList = exampleList
+      })
+    }  
+  , [])
 
 
   const editSong = (songDetails) => {
@@ -86,25 +89,28 @@ function App() {
     }
     
     
-    axios.get(URL+'/editSong', {...songDetails}, config).then(setShowEdit(true))
+    // axios.get(URL+'/editSong', {...songDetails}, config).then(setShowEdit(true))
 
-    let data = { ...songDetails };
+    // let data = { ...songDetails };
 
-    axios.get(URL, data, config).then(setShowEdit(true));
   };
 
   const onCreateSong = (songDetails) => {
     let config = {
       headers: {
-        username: songDetails.username,
+        "username": "dknopf"
       },
     };
-
+    console.log(songDetails, "songDetails")
     let data = { ...songDetails };
 
-    var songsList = [];
+    // var songsList = [];
 
-    axios.post(URL+'/createSong', data, config).then(setNewSong(false))
+    axios.get(URL+'/createSong', data, config).then( () => { 
+    setNewSong(false)
+    console.log("success")
+  
+  })
     
    
   }
@@ -121,7 +127,7 @@ function App() {
       </h1>
       <div className="flex flex-row justify-center">
         <div className="m-5 p-5 rounded border-white border-2 w-3/4 max-w-xl">
-          {songsList.map((song) => {
+          {songs.map((song) => {
             return (
               <ul>
                 <li key={song.name}>
@@ -130,7 +136,7 @@ function App() {
                       {" "}
                       {song.name} - {song.artist}{" "}
                     </h4>
-                    <div className="flex justify-between min-w-8">
+                    <div className="flex justify-between min-w-8 w-12">
                       <button onClick={() => editSong(song)}>
                         <FontAwesomeIcon
                           className="fill-current text-gray-100 hover:text-gray-300"
@@ -203,33 +209,31 @@ const NewSong = ({ onCreateSong }) => {
         <p className="my-2 text-white text-sm"> Title</p>
         <input
           type="text"
-          onChange={(event) => setSongDetails({ name: event.target.value })}
+          onChange={(event) => setSongDetails((prev_state) => ({...prev_state, name: event.target.value }))}
           className="text-black min-w-xl"
         />
         <p className="my-2 text-white text-sm"> Artist</p>
-        <input type = "text" onChange = {(event) => setSongDetails({artist: event.target.value})} className="text-black min-w-xl" />
+        <input type = "text" onChange = {(event) => setSongDetails((prev_state) => ({...prev_state,  artist: event.target.value}))} className="text-black min-w-xl" />
         <br/>
         <p className="my-2 text-white text-sm"> Rating </p>
-        <input type = "number" onChange = {(event) => setSongDetails({rating: event.target.value})} className="text-black min-w-xl"  />
+        <input type = "number" onChange = {(event) => setSongDetails((prev_state) => ({...prev_state,  rating: event.target.value}))} className="text-black min-w-xl"  />
         <br/>
         <p className="my-2 text-white text-sm"> Duration </p>
-        <input type = "number" onChange = {(event) => setSongDetails({duration: event.target.value})} className="text-black min-w-xl"  />
+        <input type = "number" onChange = {(event) => setSongDetails((prev_state) => ({...prev_state,  duration: event.target.value}))} className="text-black min-w-xl"  />
         <br />
         <p className="my-2 text-white text-sm"> Year Of Release </p>
         <input
           type="number"
-          onChange={(event) =>
-            setSongDetails({ year_of_release: event.target.value })
-          }
+          onChange={(event) => setSongDetails((prev_state) => ({...prev_state, year_of_release: event.target.value }))}
           className="text-black min-w-xl"
         />
         <br />
         <button
           className="my-2 bg-blue-500 hover:bg-blue-700 w-36 rounded"
-          onClick={onCreateSong(songDetails)}
+          onClick={ () => { console.log(songDetails.name + "yerrr") 
+            onCreateSong(songDetails)}}
         >
-          {" "}
-          Create Song{" "}
+          Create Song
         </button>
       </div>
     </>

@@ -87,7 +87,8 @@ function Login(props) {
     console.log("above axios request");
     axios.get("/logMeIn", options).then((response) => {
       if (response["data"]["loggedIn"] == true) {
-        console.log("PUT LOG INTO REGULAR PAGE HERE");
+        props.setLoginStatus(true);
+        console.log("LOGGED IN");
       } else {
         setErrorStatus(true);
       }

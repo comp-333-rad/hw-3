@@ -3,12 +3,12 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import Login from "./Login";
+import Home from "./components/Home";
 import reportWebVitals from "./reportWebVitals";
 
 ReactDOM.render(
   <React.StrictMode>
-    <Login />
-    {/* <App /> */}
+    <Home />
   </React.StrictMode>,
   document.getElementById("root")
 );

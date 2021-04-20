@@ -12,7 +12,7 @@ function LoginForm(props) {
       <div className="loginPage" key={"loginForm"}>
         <h1>
           Please login here with an existing username, or click
-          <span onClick={() => props.setLoginOrReg("register")}>here</span> to
+          <span onClick={() => props.setLoginOrReg("register")}> here</span> to
           register
         </h1>
         <form onSubmit={formPreventDefault}>
@@ -39,7 +39,7 @@ function LoginForm(props) {
       <div className="registerPage" key={"registerForm"}>
         <h1>
           Please register here with , or click
-          <span onClick={() => props.setLoginOrReg("login")}>here</span> to log
+          <span onClick={() => props.setLoginOrReg("login")}> here</span> to log
           in
         </h1>
         <form onSubmit={formPreventDefault}>

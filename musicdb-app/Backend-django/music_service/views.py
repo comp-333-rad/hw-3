@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core import serializers
+import json
 import ast
 
 
@@ -55,20 +56,27 @@ def logMeIn(request):
     if user is not None:
         print("user not none")
         login(request, user)
-        data = {"loggedIn": True}
+        data["loggedIn"] = True
         status = "All Good!"
         # return redirect("http://localhost:3000")
     else:
-        data = {"loggedIn": False}
+        data = {"loggedIn": "false"}
         status = "Failed to log in"
+    data = json.dumps(data)
     return HttpResponse(data, status)
 
 
 def createUser(request):
-    user = User.objects.create_user(
-        request.headers[user_id_header], request.headers["email"], request.headers["password"])
-    user.save()
-    return HttpResponse('', "User Created")
+    status = True
+    print("request headers for createUser:", request.headers)
+    try:
+        user = User.objects.create_user(
+            request.headers[user_id_header], request.headers["email"], request.headers["password"])
+        user.save()
+    except Exception as inst:
+        status = False
+    status = json.dumps(status)
+    return HttpResponse(status)
 
 
 @login_required(login_url="/login")

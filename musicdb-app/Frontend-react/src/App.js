@@ -238,19 +238,20 @@ function App(props) {
               // <Song {...song}> </Song>
             );
           })}
+          <div className = "flex flex-col align-center justify-center">
           <button
             onClick={() => setNewSong(true)}
-            className="w-36 text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-4"
+            className="w-36 text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-4 w-full"
           >
             New Song
           </button>
           <button
             onClick={toggleGraph}
-            className="text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-4"
+            className="text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-4 w-full"
           >
             {showTrending ? "Hide Trending Songs" : "What Songs Are Trending?"}
           </button>
-
+          </div>
           {showTrending && <BarExample />}
         </div>
 

@@ -207,7 +207,7 @@ function App(props) {
                     </h4>
                     <div className="flex justify-between min-w-8 w-52">
                       <div onClick = {() => rateSong(song.id)}>
-                    <ReactStars
+                    <ReactStars className = "focus:outline-none"
                         count={5}
 
                         onChange={ratingChanged}
@@ -219,15 +219,15 @@ function App(props) {
                       </div>
                        
 
-                      <button onClick={() => editSong(song)}>
+                      <button  className = "focus:outline-none" onClick={() => editSong(song)}>
                         <FontAwesomeIcon
-                          className="fill-current text-gray-100 hover:text-gray-300"
+                          className="fill-current text-gray-100 hover:text-gray-300 focus:outline-none"
                           icon="edit"
                         />
                       </button>
-                      <button
+                      <button 
                         onClick={() => deleteSong(song)}
-                        className="fill-current text-red-400 hover:text-red-800"
+                        className="fill-current text-red-400 hover:text-red-800 focus:outline-none"
                       >
                         <FontAwesomeIcon icon="trash" />
                       </button>

@@ -41,8 +41,10 @@ export default class BarExample extends Component {
           data={data}
           width={75}
           height={200}
+          beginAtZero = {true}
           options={{
             maintainAspectRatio: false,
+            beginAtZero: true
           }}
         />
       </div>

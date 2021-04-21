@@ -19,68 +19,7 @@ function Login(props) {
     }
     console.log(response);
   });
-  // function EntranceForm(props) {
-  //   console.log("rerendering entrance form");
-  //   if (loginOrReg == "login") {
-  //     return (
-  //       <div className="loginPage" key={"loginForm"}>
-  //         <h1>
-  //           Please login here with an existing username, or click
-  //           <span onClick={() => setLoginOrReg("register")}>here</span> to
-  //           register
-  //         </h1>
-  //         <form onSubmit={formPreventDefault}>
-  //           <input
-  //             type="text"
-  //             name="username"
-  //             placeholder="username"
-  //             id="username"
-  //             value={username}
-  //             onInput={(e) => setUsername(e.target.value)}
-  //           ></input>
-  //           <input
-  //             type="text"
-  //             name="password"
-  //             placeholder="password"
-  //             onInput={(e) => setPassword(e.target.value)}
-  //           ></input>
-  //           <input type="submit" onClick={logMeIn}></input>
-  //         </form>
-  //       </div>
-  //     );
-  //   } else {
-  //     return (
-  //       <div className="registerPage" key={"registerForm"}>
-  //         <h1>
-  //           Please register here with , or click
-  //           <span onClick={() => setLoginOrReg("login")}>here</span> to log in
-  //         </h1>
-  //         <form onSubmit={formPreventDefault}>
-  //           <input
-  //             type="text"
-  //             name="username-reg"
-  //             placeholder="username"
-  //             onInput={(e) => setUsername(e.target.value)}
-  //           ></input>
-  //           <input
-  //             type="text"
-  //             name="email"
-  //             placeholder="email"
-  //             value={email}
-  //             onInput={(e) => setEmail(e.target.value)}
-  //           ></input>
-  //           <input
-  //             type="text"
-  //             name="password"
-  //             placeholder="password"
-  //             onInput={(e) => setPassword(e.target.value)}
-  //           ></input>
-  //           <input type="submit" onClick={register}></input>
-  //         </form>
-  //       </div>
-  //     );
-  //   }
-  // }
+  
 
   function logMeIn() {
     console.log("got into logmein javascript");

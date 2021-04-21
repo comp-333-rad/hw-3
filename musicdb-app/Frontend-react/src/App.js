@@ -36,14 +36,13 @@ const exampleList = [
 
 var songsList = exampleList
 
-const URL = "http://localhost:8000"
-function App({username}) {
+function App() {
   const [showTrending, setShowTrending] = useState(false);
   const [viewSong, setViewSong] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [newSong, setNewSong] = useState(false);
   const [songs, setSongs] = useState([]);
-
+  const [username, setUsername] = useState('')
   const [viewSongState, setViewSongState] = useState({});
   const toggleGraph = () => {
     setShowTrending(!showTrending);
@@ -55,41 +54,61 @@ function App({username}) {
     //logic to delete song from DB
       let config = {
         headers: {
-          'username': songDetails.username,
+          'username': username,
           'song-id': songDetails.id
         }
       }
-      // axios.get(URL+'/deleteSong',config)
+      axios.get('/deleteSong/',config).then(fetchSongs())
     }
   
+  const logOut = () => {
+    axios.get('/logMeOut/').then( function (response) {
+    }).catch((err) => {
+      console.log("error", err)
+    })
+
+  }
+  const fetchSongs = () => {
+    axios.get('/listAllSongs').then( function (response) {
+      let songsList = []
+      response.data.map((song) => {
+        song.fields["id"] = song["pk"]
+        songsList = [...songsList, song.fields]
+      
+      })
+      setSongs(songsList)
+     
+    }).catch((err) => {
+      console.log("error", err)
+      songsList = exampleList
+    })
+  }
+
+  const getUsername = () => {
+   
+    axios.get('/getUsername').then( function (response) {
+      setUsername(response.data)
+    
+     } )
+  }
+
   React.useEffect( () => {
     
-      axios.get(URL+'/listAllSongs').then( function (response) {
-        let songsList = []
-        console.log(response.data)
-        response.data.map((song) => songsList = [...songsList, song.fields])
-        setSongs(songsList)
-        console.log(songsList)
-        console.log(songs, "songs")
-      }).catch((err) => {
-        console.log("error", err)
-        songsList = exampleList
-      })
+      fetchSongs()
+      getUsername()
     }  
   , [])
 
 
   const editSong = (songDetails) => {
+
+
     setViewSongState(songDetails)
-    let config = {
-      headers: {
-        "song-id": songDetails.id,
-        "username": songDetails.username
-      }
-    }
     
+    toggleEditSong()
+
     
-    // axios.get(URL+'/editSong', {...songDetails}, config).then(setShowEdit(true))
+   
 
     // let data = { ...songDetails };
 
@@ -98,29 +117,55 @@ function App({username}) {
   const onCreateSong = (songDetails) => {
     let config = {
       headers: {
-        "username": "dknopf"
+        username: username
       },
     };
-    console.log(songDetails, "songDetails")
     let data = { ...songDetails };
 
     // var songsList = [];
 
-    axios.get(URL+'/createSong', data, config).then( () => { 
-    setNewSong(false)
-    console.log("success")
+    axios.post('/createSong/', data, config).then( (response) => { 
+    fetchSongs()
   
-  })
+  }).then(    setNewSong(false)
+)
     
    
   }
 
-  const toggleEditSong = () => setShowEdit(false);
+  const toggleEditSong = () => setShowEdit((prevState) => !prevState);
 
-  const toggleViewSong = () => setViewSong(false);
+  const toggleViewSong = () => setViewSong((prevState) => !prevState);
 
+  const updateSong = (songDetails) => {
+    let config = {
+      headers: {
+        "song-id": songDetails.id,
+        "username": username
+      }
+    }
+
+    axios.post('/editSong/', {name: songDetails.name, artist: songDetails.artist, duration: songDetails.duration, year_of_release: songDetails.year_of_release}, config).then( (response) => { 
+      fetchSongs()
+      toggleEditSong()
+
+    })
+      
+
+
+
+    
+  }
   return (
+
+
     <div className="flex flex-col text-white">
+      <button
+            onClick={() => logOut()}
+            className="w-36 text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-4"
+          >
+            Log Out
+          </button>
       <h1 className="text-3xl my-7 text-center">
         {" "}
         <FontAwesomeIcon icon="music" /> Song Rater{" "}
@@ -130,7 +175,7 @@ function App({username}) {
           {songs.map((song) => {
             return (
               <ul>
-                <li key={song.name}>
+                <li key={song.id}>
                   <div className="flex flex-row justify-between">
                     <h4>
                       {" "}
@@ -144,7 +189,7 @@ function App({username}) {
                         />
                       </button>
                       <button
-                        onClick={() => deleteSong(song.id)}
+                        onClick={() => deleteSong(song)}
                         className="fill-current text-red-400 hover:text-red-800"
                       >
                         <FontAwesomeIcon icon="trash" />
@@ -173,8 +218,7 @@ function App({username}) {
         </div>
 
         {showEdit && (
-          <EditSong {...viewSongState} toggle={toggleEditSong}>
-            {" "}
+          <EditSong {...viewSongState} updateSongFunc={updateSong}>
           </EditSong>
         )}
 
@@ -230,7 +274,7 @@ const NewSong = ({ onCreateSong }) => {
         <br />
         <button
           className="my-2 bg-blue-500 hover:bg-blue-700 w-36 rounded"
-          onClick={ () => { console.log(songDetails.name + "yerrr") 
+          onClick={ () => {
             onCreateSong(songDetails)}}
         >
           Create Song
@@ -239,26 +283,51 @@ const NewSong = ({ onCreateSong }) => {
     </>
   );
 };
-const EditSong = ({ id, name, artist, toggle }) => {
+const EditSong = ({ id, name, artist, duration, year_of_release, rating, updateSongFunc }) => {
+
+  const [editSongState, setEditSongState] = useState({
+    name: name,
+    artist: artist,
+    year_of_release: year_of_release,
+    duration: duration,
+    id: id
+  });
   return (
     <>
       <div className="m-5 p-5 rounded border-white border-2">
         <p className="my-2 text-white text-sm"> Title</p>
         <input
-          defaultValue={name}
+          defaultValue={editSongState.name}
           className="text-black min-w-xl"
-          type="text"
+          onChange = {(event) => setEditSongState((prev_state) =>( {...prev_state, name: event.target.value}))}          type="text"
         />
         <p className="my-2 text-white text-sm"> Artist</p>
         <input
-          defaultValue={artist}
+        onChange = {(event) => setEditSongState((prev_state) =>( {...prev_state, artist: event.target.value}))}          defaultValue={editSongState.artist}
+          className="text-black min-w-xl"
+          type="text"
+        />
+        <br />
+        <p className="my-2 text-white text-sm"> Duration</p>
+
+        <input
+        onChange = {(event) => setEditSongState((prev_state) =>( {...prev_state, duration: event.target.value}))}          defaultValue={editSongState.duration}
+          className="text-black min-w-xl"
+          type="text"
+        />
+        <br />
+        <p className="my-2 text-white text-sm"> Year Of Release</p>
+
+        <input
+            onChange = {(event) => setEditSongState((prev_state) =>( {...prev_state, year_of_release: event.target.value}))}
+          defaultValue={editSongState.year_of_release}
           className="text-black min-w-xl"
           type="text"
         />
         <br />
         <button
           className="my-2 bg-blue-500 hover:bg-blue-700 w-36 rounded"
-          onClick={toggle}
+          onClick={() => updateSongFunc(editSongState)}
         >
           {" "}
           Update{" "}

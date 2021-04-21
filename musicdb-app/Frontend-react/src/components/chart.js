@@ -6,6 +6,7 @@ var data = {};
 async function getData() {
   var labels = [];
   var ratings = [];
+
   axios.get("/listAllSongs").then((response) => {
     const songs = response["data"].slice(0, 7);
     for (const song of songs) {
@@ -18,7 +19,7 @@ async function getData() {
     labels: labels,
     datasets: [
       {
-        label: "My First dataset",
+        label: "Average Ratings Of Songs",
         backgroundColor: "rgba(255,99,132,0.2)",
         borderColor: "rgba(255,99,132,1)",
         borderWidth: 1,

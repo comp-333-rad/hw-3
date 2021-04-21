@@ -12,7 +12,6 @@ async function getData() {
     for (const song of songs) {
       labels.push(song["fields"]["name"]);
       ratings.push(song["fields"]["average_rating"]);
-      console.log("song is:", song["fields"]["name"]);
     }
   });
   data = {

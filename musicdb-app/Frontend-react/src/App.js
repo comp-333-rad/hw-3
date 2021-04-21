@@ -14,6 +14,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Chart from "./components/chart";
 import BarExample from "./components/chart";
+import ReactStars from "react-rating-stars-component";
 
 library.add(fab, faCheckSquare, faCoffee, faTrash, faEdit, faMusic);
 
@@ -45,6 +46,7 @@ function App(props) {
   const [songs, setSongs] = useState([]);
   const [username, setUsername] = useState("");
   const [viewSongState, setViewSongState] = useState({});
+  const [rating, setRating] = useState(0)
   const toggleGraph = () => {
     setShowTrending(!showTrending);
   };
@@ -87,6 +89,7 @@ function App(props) {
       });
   };
 
+  
   const getUsername = () => {
     axios.get("/getUsername").then(function (response) {
       setUsername(response.data);
@@ -128,6 +131,32 @@ function App(props) {
 
   const toggleViewSong = () => setViewSong((prevState) => !prevState);
 
+  const ratingChanged = (newRating) => {
+
+    console.log(newRating + "rating")
+    setRating((oldState) => (newRating))
+  }
+
+
+  const rateSong = (id) => {
+    let config = {
+      headers: {
+          'username': username,
+          'song-id': id
+        }
+      }
+    console.log("trying for user", username)
+    console.log("trying for rating", rating)
+
+    let data = {"rating": rating }
+
+    axios.post('/updateRating/', data, config).then( function (response) {
+      console.log("updated Rating")
+       fetchSongs()
+      })
+
+    
+  }
   const updateSong = (songDetails) => {
     let config = {
       headers: {
@@ -167,6 +196,7 @@ function App(props) {
       <div className="flex flex-row justify-center">
         <div className="m-5 p-5 rounded border-white border-2 w-3/4 max-w-xl">
           {songs.map((song) => {
+            console.log(song)
             return (
               <ul>
                 <li key={song.id}>
@@ -175,7 +205,20 @@ function App(props) {
                       {" "}
                       {song.name} - {song.artist}{" "}
                     </h4>
-                    <div className="flex justify-between min-w-8 w-12">
+                    <div className="flex justify-between min-w-8 w-52">
+                      <div onClick = {() => rateSong(song.id)}>
+                    <ReactStars
+                        count={5}
+
+                        onChange={ratingChanged}
+                        size={24}
+                        activeColor="#ffd700"
+                        value = {parseInt(song.average_rating)}
+                      />
+
+                      </div>
+                       
+
                       <button onClick={() => editSong(song)}>
                         <FontAwesomeIcon
                           className="fill-current text-gray-100 hover:text-gray-300"

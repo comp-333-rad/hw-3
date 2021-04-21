@@ -29,109 +29,100 @@ library.add(fab, faCheckSquare, faCoffee, faTrash, faEdit, faMusic);
 // path('createUser/', views.createUser, name="createUser"),
 
 const exampleList = [
-  { "id": 1, "name": "It's Time", "artist": "Imagine Dragons", "rating": 5, },
-  { "id": 2, "name": "Jumpman", "artist": "Drake", "rating": 5 },
-  { "id": 3, "name": "What's Next", "artist": "Drake", "rating": 4.5 },
-  { "id": 4, "name": "Wavy", "artist": "Sal Houdini", "rating": 4.3 }]
+  { id: 1, name: "It's Time", artist: "Imagine Dragons", rating: 5 },
+  { id: 2, name: "Jumpman", artist: "Drake", rating: 5 },
+  { id: 3, name: "What's Next", artist: "Drake", rating: 4.5 },
+  { id: 4, name: "Wavy", artist: "Sal Houdini", rating: 4.3 },
+];
 
-var songsList = exampleList
+var songsList = exampleList;
 
-function App() {
+function App(props) {
   const [showTrending, setShowTrending] = useState(false);
   const [viewSong, setViewSong] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [newSong, setNewSong] = useState(false);
   const [songs, setSongs] = useState([]);
-  const [username, setUsername] = useState('')
+  const [username, setUsername] = useState("");
   const [viewSongState, setViewSongState] = useState({});
   const toggleGraph = () => {
     setShowTrending(!showTrending);
   };
 
- 
-
   const deleteSong = (songDetails) => {
     //logic to delete song from DB
-      let config = {
-        headers: {
-          'username': username,
-          'song-id': songDetails.id
-        }
-      }
-      axios.get('/deleteSong/',config).then(fetchSongs())
-    }
-  
-  const logOut = () => {
-    axios.get('/logMeOut/').then( function (response) {
-    }).catch((err) => {
-      console.log("error", err)
-    })
+    let config = {
+      headers: {
+        username: username,
+        "song-id": songDetails.id,
+      },
+    };
+    axios.get("/deleteSong/", config).then(fetchSongs());
+  };
 
-  }
-  const fetchSongs = () => {
-    axios.get('/listAllSongs').then( function (response) {
-      let songsList = []
-      response.data.map((song) => {
-        song.fields["id"] = song["pk"]
-        songsList = [...songsList, song.fields]
-      
+  const logOut = () => {
+    axios
+      .get("/logMeOut/")
+      .then(function (response) {
+        props.setLoggedIn(false);
       })
-      setSongs(songsList)
-     
-    }).catch((err) => {
-      console.log("error", err)
-      songsList = exampleList
-    })
-  }
+      .catch((err) => {
+        console.log("error", err);
+      });
+  };
+  const fetchSongs = () => {
+    axios
+      .get("/listAllSongs")
+      .then(function (response) {
+        let songsList = [];
+        response.data.map((song) => {
+          song.fields["id"] = song["pk"];
+          songsList = [...songsList, song.fields];
+        });
+        setSongs(songsList);
+      })
+      .catch((err) => {
+        console.log("error", err);
+        songsList = exampleList;
+      });
+  };
 
   const getUsername = () => {
-   
-    axios.get('/getUsername').then( function (response) {
-      setUsername(response.data)
-    
-     } )
-  }
+    axios.get("/getUsername").then(function (response) {
+      setUsername(response.data);
+    });
+  };
 
-  React.useEffect( () => {
-    
-      fetchSongs()
-      getUsername()
-    }  
-  , [])
-
+  React.useEffect(() => {
+    fetchSongs();
+    getUsername();
+  }, []);
 
   const editSong = (songDetails) => {
+    setViewSongState(songDetails);
 
-
-    setViewSongState(songDetails)
-    
-    toggleEditSong()
-
-    
-   
+    toggleEditSong();
 
     // let data = { ...songDetails };
-
   };
 
   const onCreateSong = (songDetails) => {
     let config = {
       headers: {
-        username: username
+        username: username,
       },
     };
     let data = { ...songDetails };
 
     // var songsList = [];
 
-    axios.post('/createSong/', data, config).then( (response) => { 
-    fetchSongs()
-  
-  }).then(    setNewSong(false)
-)
-    
-   
-  }
+    axios
+      .post("/createSong/", data, config)
+      .then((response) => {
+        fetchSongs();
+      })
+      .then(setNewSong(false));
+  };
 
   const toggleEditSong = () => setShowEdit((prevState) => !prevState);
 
@@ -141,31 +132,34 @@ function App() {
     let config = {
       headers: {
         "song-id": songDetails.id,
-        "username": username
-      }
-    }
+        username: username,
+      },
+    };
 
-    axios.post('/editSong/', {name: songDetails.name, artist: songDetails.artist, duration: songDetails.duration, year_of_release: songDetails.year_of_release}, config).then( (response) => { 
-      fetchSongs()
-      toggleEditSong()
-
-    })
-      
-
-
-
-    
-  }
+    axios
+      .post(
+        "/editSong/",
+        {
+          name: songDetails.name,
+          artist: songDetails.artist,
+          duration: songDetails.duration,
+          year_of_release: songDetails.year_of_release,
+        },
+        config
+      )
+      .then((response) => {
+        fetchSongs();
+        toggleEditSong();
+      });
+  };
   return (
-
-
     <div className="flex flex-col text-white">
       <button
-            onClick={() => logOut()}
-            className="w-36 text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-4"
-          >
-            Log Out
-          </button>
+        onClick={() => logOut()}
+        className="w-36 text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-4"
+      >
+        Log Out
+      </button>
       <h1 className="text-3xl my-7 text-center">
         {" "}
         <FontAwesomeIcon icon="music" /> Song Rater{" "}
@@ -218,8 +212,7 @@ function App() {
         </div>
 
         {showEdit && (
-          <EditSong {...viewSongState} updateSongFunc={updateSong}>
-          </EditSong>
+          <EditSong {...viewSongState} updateSongFunc={updateSong}></EditSong>
         )}
 
         {viewSong && (
@@ -253,29 +246,67 @@ const NewSong = ({ onCreateSong }) => {
         <p className="my-2 text-white text-sm"> Title</p>
         <input
           type="text"
-          onChange={(event) => setSongDetails((prev_state) => ({...prev_state, name: event.target.value }))}
+          onChange={(event) =>
+            setSongDetails((prev_state) => ({
+              ...prev_state,
+              name: event.target.value,
+            }))
+          }
           className="text-black min-w-xl"
         />
         <p className="my-2 text-white text-sm"> Artist</p>
-        <input type = "text" onChange = {(event) => setSongDetails((prev_state) => ({...prev_state,  artist: event.target.value}))} className="text-black min-w-xl" />
-        <br/>
+        <input
+          type="text"
+          onChange={(event) =>
+            setSongDetails((prev_state) => ({
+              ...prev_state,
+              artist: event.target.value,
+            }))
+          }
+          className="text-black min-w-xl"
+        />
+        <br />
         <p className="my-2 text-white text-sm"> Rating </p>
-        <input type = "number" onChange = {(event) => setSongDetails((prev_state) => ({...prev_state,  rating: event.target.value}))} className="text-black min-w-xl"  />
-        <br/>
+        <input
+          type="number"
+          onChange={(event) =>
+            setSongDetails((prev_state) => ({
+              ...prev_state,
+              rating: event.target.value,
+            }))
+          }
+          className="text-black min-w-xl"
+        />
+        <br />
         <p className="my-2 text-white text-sm"> Duration </p>
-        <input type = "number" onChange = {(event) => setSongDetails((prev_state) => ({...prev_state,  duration: event.target.value}))} className="text-black min-w-xl"  />
+        <input
+          type="number"
+          onChange={(event) =>
+            setSongDetails((prev_state) => ({
+              ...prev_state,
+              duration: event.target.value,
+            }))
+          }
+          className="text-black min-w-xl"
+        />
         <br />
         <p className="my-2 text-white text-sm"> Year Of Release </p>
         <input
           type="number"
-          onChange={(event) => setSongDetails((prev_state) => ({...prev_state, year_of_release: event.target.value }))}
+          onChange={(event) =>
+            setSongDetails((prev_state) => ({
+              ...prev_state,
+              year_of_release: event.target.value,
+            }))
+          }
           className="text-black min-w-xl"
         />
         <br />
         <button
           className="my-2 bg-blue-500 hover:bg-blue-700 w-36 rounded"
-          onClick={ () => {
-            onCreateSong(songDetails)}}
+          onClick={() => {
+            onCreateSong(songDetails);
+          }}
         >
           Create Song
         </button>
@@ -283,14 +314,21 @@ const NewSong = ({ onCreateSong }) => {
     </>
   );
 };
-const EditSong = ({ id, name, artist, duration, year_of_release, rating, updateSongFunc }) => {
-
+const EditSong = ({
+  id,
+  name,
+  artist,
+  duration,
+  year_of_release,
+  rating,
+  updateSongFunc,
+}) => {
   const [editSongState, setEditSongState] = useState({
     name: name,
     artist: artist,
     year_of_release: year_of_release,
     duration: duration,
-    id: id
+    id: id,
   });
   return (
     <>
@@ -299,11 +337,23 @@ const EditSong = ({ id, name, artist, duration, year_of_release, rating, updateS
         <input
           defaultValue={editSongState.name}
           className="text-black min-w-xl"
-          onChange = {(event) => setEditSongState((prev_state) =>( {...prev_state, name: event.target.value}))}          type="text"
+          onChange={(event) =>
+            setEditSongState((prev_state) => ({
+              ...prev_state,
+              name: event.target.value,
+            }))
+          }
+          type="text"
         />
         <p className="my-2 text-white text-sm"> Artist</p>
         <input
-        onChange = {(event) => setEditSongState((prev_state) =>( {...prev_state, artist: event.target.value}))}          defaultValue={editSongState.artist}
+          onChange={(event) =>
+            setEditSongState((prev_state) => ({
+              ...prev_state,
+              artist: event.target.value,
+            }))
+          }
+          defaultValue={editSongState.artist}
           className="text-black min-w-xl"
           type="text"
         />
@@ -311,7 +361,13 @@ const EditSong = ({ id, name, artist, duration, year_of_release, rating, updateS
         <p className="my-2 text-white text-sm"> Duration</p>
 
         <input
-        onChange = {(event) => setEditSongState((prev_state) =>( {...prev_state, duration: event.target.value}))}          defaultValue={editSongState.duration}
+          onChange={(event) =>
+            setEditSongState((prev_state) => ({
+              ...prev_state,
+              duration: event.target.value,
+            }))
+          }
+          defaultValue={editSongState.duration}
           className="text-black min-w-xl"
           type="text"
         />
@@ -319,7 +375,12 @@ const EditSong = ({ id, name, artist, duration, year_of_release, rating, updateS
         <p className="my-2 text-white text-sm"> Year Of Release</p>
 
         <input
-            onChange = {(event) => setEditSongState((prev_state) =>( {...prev_state, year_of_release: event.target.value}))}
+          onChange={(event) =>
+            setEditSongState((prev_state) => ({
+              ...prev_state,
+              year_of_release: event.target.value,
+            }))
+          }
           defaultValue={editSongState.year_of_release}
           className="text-black min-w-xl"
           type="text"

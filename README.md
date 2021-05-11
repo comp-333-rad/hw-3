@@ -13,7 +13,7 @@ We chose to use a rating scheme where each user can see the average rating of ea
 Just install Django and Npm as you usually do. 
 
 ##### Django
-Then, go into `musicdb-app/Backend-django` and activate the `django_song_service_virtual_env` and run `pip install -r requirements.txt` to install all required packages. Then run `python3 manage.py runserver`
+Then, go into `musicdb-app/Backend-django` and activate the `django_song_service_virtual_env` and run `pip3 install -r requirements.txt` to install all required packages. Then run `python3 manage.py runserver`
 ##### React
 Then go into `musicdb-app/Frontend-react` and run `npm i` to install all node packages. After that is done, run npm start to start the backend servor.
 
